@@ -89,17 +89,23 @@ version(){
 add_apt_repository() {
   apt-get update \
   && apt-get upgrade \
-  && apt-get install -y software-properties-common python-software-properties \
-  && add-apt-repository -y https://meshblu-connector.octoblu.com/apt/ \
+  && apt-get install -y software-properties-common apt-transport-https \
+  && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
   && apt-get update
 }
 
 install_connectors() {
-  apt-get install -y \
+  apt-get install \
+    -y \
+    --allow-unauthenticated \
     meshblu-connector-pm2 \
     meshblu-connector-configurator-meshblu-json \
     meshblu-connector-powermate \
-    meshblu-connector-left-right-http
+    meshblu-connector-left-right-http \
+  && mkdir -p /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http \
+  && mkdir -p /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate \
+  && touch /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http/meshblu.json \
+  && touch /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate/meshblu.json
 }
 
 main() {
@@ -147,7 +153,15 @@ main() {
 
   # assert_required_params "$example_arg"
   add_apt_repository \
-  && install_connectors
+  && install_connectors \
+  && echo '============================' \
+  && echo "  Cool, now you'll want to update:" \
+  && echo '    /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http/meshblu.json' \
+  && echo '    /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate/meshblu.json' \
+  && echo '' \
+  && echo "  Then (re)start the connectors:" \
+  && echo '    sudo systemctl stop meshblu-connector-pm2 && sudo systemctl start meshblu-connector-pm2' \
+  && echo '============================'
 }
 
 main "$@"
