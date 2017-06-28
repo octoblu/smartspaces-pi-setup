@@ -88,7 +88,7 @@ version(){
 
 add_apt_repository() {
   apt-get update \
-  && apt-get upgrade \
+  && apt-get upgrade -y \
   && apt-get install -y software-properties-common apt-transport-https \
   && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
   && apt-get update
