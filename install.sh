@@ -102,10 +102,10 @@ install_connectors() {
     meshblu-connector-configurator-meshblu-json \
     meshblu-connector-powermate \
     meshblu-connector-left-right-http \
-  && mkdir -p /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http \
-  && mkdir -p /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate \
-  && touch /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http/meshblu.json \
-  && touch /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate/meshblu.json
+  && mkdir -p /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http \
+  && mkdir -p /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate \
+  && touch /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http/meshblu.json \
+  && touch /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate/meshblu.json
 }
 
 main() {
@@ -156,8 +156,8 @@ main() {
   && install_connectors \
   && echo '============================' \
   && echo "  Cool, now you'll want to update:" \
-  && echo '    /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-left-right-http/meshblu.json' \
-  && echo '    /usr/share/meshblu-connectors/configurators/meshblu-json/meshblu-connector-powermate/meshblu.json' \
+  && echo '    /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http/meshblu.json' \
+  && echo '    /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate/meshblu.json' \
   && echo '' \
   && echo "  Then (re)start the connectors:" \
   && echo '    sudo systemctl stop meshblu-connector-pm2 && sudo systemctl start meshblu-connector-pm2' \
