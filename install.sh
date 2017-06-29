@@ -97,6 +97,8 @@ add_apt_repository() {
 }
 
 install_connectors() {
+  local config_dir='/usr/share/meshblu-connectors/config/meshblu-json'
+
   apt-get install \
     -y \
     --allow-unauthenticated \
@@ -106,10 +108,12 @@ install_connectors() {
     meshblu-connector-left-right-http \
     wmctrl \
     xdotool \
-  && mkdir -p /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http \
-  && mkdir -p /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate \
-  && touch /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http/meshblu.json \
-  && touch /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate/meshblu.json
+  && mkdir -p "$config_dir/meshblu-connector-left-right-http" \
+  && mkdir -p "$config_dir/meshblu-connector-powermate" \
+  && touch "$config_dir/meshblu-connector-powermate/meshblu.json" \
+  && ln -s \
+    "$config_dir/meshblu-connector-powermate/meshblu.json" \
+    "$config_dir/meshblu-connector-left-right-http/meshblu.json"
 }
 
 main() {
@@ -160,7 +164,6 @@ main() {
   && install_connectors \
   && echo '============================' \
   && echo "  Cool, now you'll want to update:" \
-  && echo '    /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-left-right-http/meshblu.json' \
   && echo '    /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate/meshblu.json' \
   && echo '' \
   && echo "  Then (re)start the connectors:" \
