@@ -89,7 +89,7 @@ version(){
 add_apt_repository() {
   # && apt-get install -y software-properties-common apt-transport-https \
   # && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
-  apt-get update && apt-get upgrade -y && apt-get install apt-transport-https || return 1
+  apt-get update && apt-get upgrade -y --allow-unauthenticated && apt-get install apt-transport-https || return 1
   grep '^deb https://meshblu-connector.octoblu.com/apt/ stable main$' && return 0
 
   echo 'deb https://meshblu-connector.octoblu.com/apt/ stable main' >> /etc/apt/sources.list \
