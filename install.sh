@@ -111,7 +111,7 @@ install_connectors() {
   && mkdir -p "$config_dir/meshblu-connector-left-right-http" \
   && mkdir -p "$config_dir/meshblu-connector-powermate" \
   && touch "$config_dir/meshblu-connector-powermate/meshblu.json" \
-  && ln -s \
+  && ln -nsf \
     "$config_dir/meshblu-connector-powermate/meshblu.json" \
     "$config_dir/meshblu-connector-left-right-http/meshblu.json"
 }
