@@ -94,30 +94,25 @@ add_apt_repository() {
   # && apt-get install -y software-properties-common apt-transport-https \
   # && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
   apt-get update && apt-get upgrade -y --allow-unauthenticated && apt-get install apt-transport-https || return 1
-  grep '^deb https://meshblu-connector.octoblu.com/apt/ stable main$' && return 0
+  grep 'https://meshblu-connector.octoblu.com/apt/' && return 0
 
   echo 'deb https://meshblu-connector.octoblu.com/apt/ stable main' >> /etc/apt/sources.list \
   && apt-get update
 }
 
 install_connectors() {
-  local config_dir='/usr/share/meshblu-connectors/config/meshblu-json'
-
   apt-get install \
     -y \
-    --allow-unauthenticated \
     meshblu-connector-pm2 \
-    meshblu-connector-configurator-meshblu-json \
+    meshblu-connector-configurator-pi-http \
     meshblu-connector-powermate \
     meshblu-connector-left-right-http \
     wmctrl \
-    xdotool \
-  && mkdir -p "$config_dir/meshblu-connector-left-right-http" \
-  && mkdir -p "$config_dir/meshblu-connector-powermate" \
-  && touch "$config_dir/meshblu-connector-powermate/meshblu.json" \
-  && ln -nsf \
-    "$config_dir/meshblu-connector-powermate/meshblu.json" \
-    "$config_dir/meshblu-connector-left-right-http/meshblu.json"
+    xdotool
+}
+
+restart_connectors() {
+  systemctl stop meshblu-connector-pm2 && systemctl start meshblu-connector-pm2
 }
 
 main() {
@@ -164,16 +159,10 @@ main() {
   done
 
   # assert_required_params "$example_arg"
-  add_apt_repository \
   add_apt_key \
+  && add_apt_repository \
   && install_connectors \
-  && echo '============================' \
-  && echo "  Cool, now you'll want to update:" \
-  && echo '    /usr/share/meshblu-connectors/config/meshblu-json/meshblu-connector-powermate/meshblu.json' \
-  && echo '' \
-  && echo "  Then (re)start the connectors:" \
-  && echo '    sudo systemctl stop meshblu-connector-pm2 && sudo systemctl start meshblu-connector-pm2' \
-  && echo '============================'
+  && restart_connectors
 }
 
 main "$@"
