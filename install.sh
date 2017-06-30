@@ -86,6 +86,10 @@ version(){
   fi
 }
 
+add_apt_key() {
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 445C1350
+}
+
 add_apt_repository() {
   # && apt-get install -y software-properties-common apt-transport-https \
   # && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
@@ -161,6 +165,7 @@ main() {
 
   # assert_required_params "$example_arg"
   add_apt_repository \
+  add_apt_key \
   && install_connectors \
   && echo '============================' \
   && echo "  Cool, now you'll want to update:" \
