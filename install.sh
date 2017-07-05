@@ -93,15 +93,15 @@ add_apt_key() {
 add_apt_repository() {
   # && apt-get install -y software-properties-common apt-transport-https \
   # && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
-  apt-get update && apt-get upgrade -y --allow-unauthenticated && apt-get install apt-transport-https || return 1
-  grep 'https://meshblu-connector.octoblu.com/apt/' && return 0
+  apt-get update && apt-get install -y apt-transport-https || return 1
+  grep 'https://meshblu-connector.octoblu.com/apt/' /etc/apt/sources.list && return 0
 
   echo 'deb https://meshblu-connector.octoblu.com/apt/ stable main' >> /etc/apt/sources.list \
   && apt-get update
 }
 
 install_connectors() {
-  apt-get install \
+  env MESHBLU_CONNECTOR_PM2_USERNAME=pi apt-get install \
     -y \
     meshblu-connector-pm2 \
     meshblu-connector-configurator-pi-http \
