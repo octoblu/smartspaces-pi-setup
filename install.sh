@@ -87,7 +87,18 @@ version(){
 }
 
 add_apt_key() {
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 445C1350
+  local key_filepath
+
+  key_filepath="$(mktemp)" || return 1
+
+  curl \
+    --fail \
+    --location \
+    --silent \
+    --output "$key_filepath" \
+    "https://meshblu-connector.octoblu.com/keys/445c1350.pub" || return 1
+
+  apt-key add "$key_filepath"
 }
 
 add_apt_repository() {
