@@ -118,6 +118,7 @@ install_connectors() {
     meshblu-connector-configurator-pi-http \
     meshblu-connector-powermate \
     meshblu-connector-left-right-http \
+    smartspaces-pi-dashboard \
     wmctrl \
     xdotool
 }
