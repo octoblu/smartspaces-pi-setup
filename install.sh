@@ -114,10 +114,12 @@ add_apt_repository() {
 install_connectors() {
   env MESHBLU_CONNECTOR_PM2_USERNAME=pi apt-get install \
     -y \
-    meshblu-connector-pm2 \
+    genisys-powermate-to-rotator \
+    meshblu-connector-bash \
     meshblu-connector-configurator-pi-http \
-    meshblu-connector-powermate \
-    meshblu-connector-left-right-http \
+    meshblu-connector-pm2 \
+    meshblu-connector-websocket-to-meshblu \
+    powermate-websocket \
     smartspaces-pi-dashboard \
     wmctrl \
     xdotool
