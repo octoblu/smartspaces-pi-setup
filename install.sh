@@ -111,18 +111,28 @@ add_apt_repository() {
   && apt-get update
 }
 
+set_username() {
+  debconf -omeshblu-connector-pm2 bash -c '. /usr/share/debconf/confmodule && db_set meshblu-connector-pm2/username pi'
+}
+
 install_connectors() {
+  apt-get purge -y meshblu-connector-powermate meshblu-connector-left-right-http &> /dev/null
+
+  apt-get install debconf apt-utils || return 1
+
+  set_username || return 1
+
   env MESHBLU_CONNECTOR_PM2_USERNAME=pi apt-get install \
-    -y \
-    genisys-powermate-to-rotator \
-    meshblu-connector-bash \
-    meshblu-connector-configurator-pi-http \
-    meshblu-connector-pm2 \
-    meshblu-connector-websocket-to-meshblu \
-    powermate-websocket \
-    smartspaces-pi-dashboard \
-    wmctrl \
-    xdotool
+      -y \
+      genisys-powermate-to-rotator \
+      meshblu-connector-bash \
+      meshblu-connector-configurator-pi-http \
+      meshblu-connector-pm2 \
+      meshblu-connector-websocket-to-meshblu \
+      powermate-websocket \
+      smartspaces-pi-dashboard \
+      wmctrl \
+      xdotool
 }
 
 restart_connectors() {
