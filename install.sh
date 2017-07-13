@@ -118,7 +118,7 @@ set_username() {
 install_connectors() {
   apt-get purge -y meshblu-connector-powermate meshblu-connector-left-right-http &> /dev/null
 
-  apt-get install debconf apt-utils || return 1
+  apt-get install -y debconf apt-utils || return 1
 
   set_username || return 1
 
