@@ -112,7 +112,17 @@ add_apt_repository() {
 }
 
 set_username() {
+  local tmpdir config_filename
+
+  tmpdir="$(mktemp --directory)"
+  pushd "$tmpdir" > /dev/null
+  apt-get download meshblu-connector-pm2 | return 1
+  config_filename="$(2>/dev/null apt-extracttemplates ./meshblu-connector-pm2* | head -n 1 | tr ' ' '\n' | grep '\.config')" || return 1
+
+  debconf "$config_filename"
   debconf -omeshblu-connector-pm2 bash -c '. /usr/share/debconf/confmodule && db_set meshblu-connector-pm2/username pi'
+  popd > /dev/null
+  return
 }
 
 install_connectors() {
