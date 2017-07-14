@@ -102,9 +102,7 @@ add_apt_key() {
 }
 
 add_apt_repository() {
-  # && apt-get install -y software-properties-common apt-transport-https \
-  # && add-apt-repository -y 'deb https://meshblu-connector.octoblu.com/apt/ stable main' \
-  apt-get update && apt-get install -y apt-transport-https || return 1
+  apt-get update && apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" apt-transport-https || return 1
   grep 'https://meshblu-connector.octoblu.com/apt/' /etc/apt/sources.list && return 0
 
   echo 'deb https://meshblu-connector.octoblu.com/apt/ stable main' >> /etc/apt/sources.list \
@@ -129,12 +127,15 @@ set_username() {
 install_connectors() {
   apt-get purge -y meshblu-connector-powermate meshblu-connector-left-right-http &> /dev/null
 
-  apt-get install -y debconf apt-utils || return 1
+  apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" debconf apt-utils || return 1
+      
 
   set_username || return 1
 
   env MESHBLU_CONNECTOR_PM2_USERNAME=pi apt-get install \
       -y \
+      --force-yes \
+      -o Dpkg::Options::="--force-confnew" \
       genisys-powermate-to-rotator \
       meshblu-connector-bash \
       meshblu-connector-configurator-pi-http \
