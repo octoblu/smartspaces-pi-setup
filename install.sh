@@ -109,6 +109,19 @@ add_apt_repository() {
   && apt-get update
 }
 
+add_env() {
+  echo "# smartspaces-pi-setup ran on: $(date)" >> /home/pi/.bashrc
+  echo "export MESHBLU_CONNECTOR_PM2_HOME=/var/run/meshblu-connector-pm2" >> /home/pi/.bashrc
+  echo "export MESHBLU_CONNECTOR_HOME=/usr/share/meshblu-connectors" >> /home/pi/.bashrc
+
+  echo "==================================="
+  echo "To get the environment for running "
+  echo " meshblu-connector-pm2, you'll want"
+  echo " to 'source ~/.bashrc', or log out "
+  echo " of the shell and back in again    "
+  echo "==================================="
+}
+
 set_username() {
   local tmpdir config_filename
 
@@ -198,7 +211,8 @@ main() {
   add_apt_key \
   && add_apt_repository \
   && install_connectors \
-  && restart_connectors
+  && restart_connectors \
+  && add_env
 }
 
 main "$@"
