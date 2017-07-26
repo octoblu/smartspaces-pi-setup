@@ -152,6 +152,7 @@ install_connectors() {
       genisys-powermate-to-rotator \
       meshblu-connector-bash \
       meshblu-connector-configurator-pi-http \
+      meshblu-connector-linux-citrix-receiver \
       meshblu-connector-pm2 \
       meshblu-connector-websocket-to-meshblu \
       powermate-websocket \
