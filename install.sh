@@ -87,6 +87,7 @@ version(){
 }
 
 add_apt_key() {
+  log "add_apt_key"
   local key_filepath
 
   key_filepath="$(mktemp)" || return 1
@@ -102,6 +103,7 @@ add_apt_key() {
 }
 
 add_apt_repository() {
+  log "add_apt_repository"
   apt-get update && apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" apt-transport-https || return 1
   grep 'https://meshblu-connector.octoblu.com/apt/' /etc/apt/sources.list && return 0
 
@@ -110,9 +112,9 @@ add_apt_repository() {
 }
 
 add_env() {
-  echo "# smartspaces-pi-setup ran on: $(date)" >> /home/pi/.bashrc
-  echo "export MESHBLU_CONNECTOR_PM2_HOME=/var/run/meshblu-connector-pm2" >> /home/pi/.bashrc
-  echo "export MESHBLU_CONNECTOR_HOME=/usr/share/meshblu-connectors" >> /home/pi/.bashrc
+  log "add_env"
+  ensure_line "/home/pi/.bashrc" "export MESHBLU_CONNECTOR_PM2_HOME=/var/run/meshblu-connector-pm2"
+  ensure_line "/home/pi/.bashrc" "export MESHBLU_CONNECTOR_HOME=/usr/share/meshblu-connectors"
 
   echo "==================================="
   echo "To get the environment for running "
@@ -120,6 +122,18 @@ add_env() {
   echo " to 'source ~/.bashrc', or log out "
   echo " of the shell and back in again    "
   echo "==================================="
+}
+
+ensure_line() {
+  local filename line
+  filename="$1"
+  line="$2"
+
+  if grep --fixed-strings "$line" "$filename"; then
+    return 0
+  fi
+
+  echo "$line" >> "$filename"
 }
 
 set_username() {
@@ -138,10 +152,11 @@ set_username() {
 }
 
 install_connectors() {
+  log "install_connectors"
   apt-get purge -y meshblu-connector-powermate meshblu-connector-left-right-http &> /dev/null
 
   apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" debconf apt-utils || return 1
-      
+
 
   set_username || return 1
 
@@ -162,7 +177,26 @@ install_connectors() {
 }
 
 restart_connectors() {
-  systemctl stop meshblu-connector-pm2 && systemctl start meshblu-connector-pm2
+  log "restart_connectors"
+  local current_state
+  current_state="$(systemctl is-active meshblu-connector-pm2)"
+
+  if [ "$current_state" == "active" ]; then
+    (sleep 1 && log "restart meshblu-connector-pm2" & systemctl restart meshblu-connector-pm2) &
+    log "waiting 1s to restart meshblu-connector-pm2"
+  else
+    log "start meshblu-connector-pm2"
+    systemctl start meshblu-connector-pm2
+  fi
+}
+
+log() {
+  local message="$1"
+  local logfile="/var/log/smartspaces-pi-setup/smartspaces-pi-setup.log"
+
+  mkdir -p "$(dirname "$logfile")" \
+  && touch "$logfile" \
+  && echo "$(date --iso=seconds)" "$message" >> "$logfile"
 }
 
 main() {
@@ -208,12 +242,21 @@ main() {
     shift
   done
 
-  # assert_required_params "$example_arg"
-  add_apt_key \
+
+  log "pi-setup started" \
+  && add_apt_key \
   && add_apt_repository \
   && install_connectors \
+  && add_env \
   && restart_connectors \
-  && add_env
+  && log "pi-setup ended"
+
+  local exit_code=$?
+
+  if [ "$exit_code" != "0" ]; then
+    log "failed"
+    exit $exit_code
+  fi
 }
 
 main "$@"
