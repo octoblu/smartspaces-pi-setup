@@ -153,7 +153,11 @@ set_username() {
 
 install_connectors() {
   log "install_connectors"
-  apt-get purge -y meshblu-connector-powermate meshblu-connector-left-right-http &> /dev/null
+  apt-get purge -y \
+    meshblu-connector-bash \
+    meshblu-connector-powermate \
+    meshblu-connector-left-right-http \
+    &> /dev/null
 
   apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" debconf apt-utils || return 1
 
@@ -165,7 +169,6 @@ install_connectors() {
       --force-yes \
       -o Dpkg::Options::="--force-confnew" \
       genisys-powermate-to-rotator \
-      meshblu-connector-bash \
       meshblu-connector-configurator-pi-http \
       meshblu-connector-linux-citrix-receiver \
       meshblu-connector-pm2 \
