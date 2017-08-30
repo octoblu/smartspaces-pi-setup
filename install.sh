@@ -154,9 +154,11 @@ set_username() {
 install_connectors() {
   log "install_connectors"
   apt-get purge -y \
+    genisys-powermate-to-rotator \
     meshblu-connector-bash \
-    meshblu-connector-powermate \
     meshblu-connector-left-right-http \
+    meshblu-connector-powermate \
+    smartspaces-pi-dashboard \
     &> /dev/null
 
   apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" debconf apt-utils || return 1
@@ -168,13 +170,11 @@ install_connectors() {
       -y \
       --force-yes \
       -o Dpkg::Options::="--force-confnew" \
-      genisys-powermate-to-rotator \
       meshblu-connector-configurator-pi-http \
       meshblu-connector-linux-citrix-receiver \
       meshblu-connector-pm2 \
       meshblu-connector-websocket-to-meshblu \
       powermate-websocket \
-      smartspaces-pi-dashboard \
       smartspaces-rotator-dashboard \
       wmctrl \
       xdotool
