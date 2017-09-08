@@ -69,6 +69,10 @@ usage(){
   echo 'Arguments:'
   echo '  -h, --help       print this help text'
   echo '  -v, --version    print the version'
+  echo '  -u, --upgrade    removes the old rotator and registers'
+  echo '                   workspace hub services as LXDE autostart'
+  echo '                   applications instead of using'
+  echo '                   /etc/alternatives/x-session-manager'
   echo ''
   echo 'Environment:'
   echo '  DEBUG            print debug output'
@@ -125,12 +129,19 @@ add_env() {
 }
 
 ensure_line() {
-  local filename line
+  local lastchar filename line
+
   filename="$1"
   line="$2"
 
   if grep --fixed-strings "$line" "$filename"; then
     return 0
+  fi
+
+  # ensure ends in newline
+  lastchar=$(tail -c 1 "$filename")
+  if [ lastchar != "" ]; then
+    echo "" >> "$filename"
   fi
 
   echo "$line" >> "$filename"
@@ -194,6 +205,42 @@ restart_connectors() {
   fi
 }
 
+setup_bin_iBeacon() {
+  local contents=$'#!/bin/bash\n\ncd /opt/Citrix/WorkspaceHub && sudo ./iBeacon.sh\n'
+  echo "$contents" > /usr/local/bin/iBeacon \
+  && chmod +x /usr/local/bin/iBeacon
+}
+
+setup_bin_WorkspaceHubControlService() {
+  local contents=$'#!/bin/bash\n\ncd /opt/Citrix/WorkspaceHub && sudo ./WorkspaceHubControlService.sh\n'
+  echo "$contents" > /usr/local/bin/WorkspaceHubControlService \
+  && chmod +x /usr/local/bin/WorkspaceHubControlService
+}
+
+update_autostart() {
+  local filename=/home/pi/.config/lxsession/LXDE-pi/autostart
+
+  ensure_line "$filename" '@firefox http://localhost:3000' \
+  && ensure_line "$filename" '@iBeacon' \
+  && ensure_line "$filename" '@WorkspaceHubControlService'
+}
+
+upgrade_hub() {
+  local upgrade_hub="$1"
+  if [ "$upgrade_hub" != "true" ]; then
+    return 0
+  fi
+
+  setup_bin_WorkspaceHubControlService \
+  && setup_bin_iBeacon \
+  && update_autostart \
+  && update_x_session_manager
+}
+
+update_x_session_manager() {
+  ln -nsf /usr/bin/startlxde-pi /etc/alternatives/x-session-manager
+}
+
 log() {
   local message="$1"
   local logfile="/var/log/smartspaces-pi-setup/smartspaces-pi-setup.log"
@@ -204,6 +251,7 @@ log() {
 }
 
 main() {
+  local upgrade='false'
   # Define args up here
   while [ "$1" != "" ]; do
     local param value
@@ -215,6 +263,9 @@ main() {
       -h | --help)
         usage
         exit 0
+        ;;
+      -u | --upgrade)
+        upgrade='true'
         ;;
       -v | --version)
         version
@@ -253,6 +304,7 @@ main() {
   && install_connectors \
   && add_env \
   && restart_connectors \
+  && upgrade_hub "$upgrade" \
   && log "pi-setup ended"
 
   local exit_code=$?
