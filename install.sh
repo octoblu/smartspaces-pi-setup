@@ -187,6 +187,7 @@ install_connectors() {
       meshblu-connector-websocket-to-meshblu \
       powermate-websocket \
       smartspaces-rotator-dashboard \
+      smartspaces-rotator-dashboard-updater \
       wmctrl \
       xdotool
 }
