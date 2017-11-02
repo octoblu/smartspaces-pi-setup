@@ -170,7 +170,6 @@ install_connectors() {
     meshblu-connector-left-right-http \
     meshblu-connector-powermate \
     smartspaces-pi-dashboard \
-    azure-connector-citrix-receiver \
     &> /dev/null
 
   apt-get install -y --force-yes -o Dpkg::Options::="--force-confnew" debconf apt-utils || return 1
@@ -183,12 +182,12 @@ install_connectors() {
       --force-yes \
       -o Dpkg::Options::="--force-confnew" \
       meshblu-connector-configurator-pi-http \
+      meshblu-connector-linux-citrix-receiver \
       meshblu-connector-pm2 \
       meshblu-connector-websocket-to-meshblu \
       powermate-websocket \
       smartspaces-rotator-dashboard \
       smartspaces-rotator-dashboard-updater \
-      azure-connector-citrix-receiver \
       wmctrl \
       xdotool
 }
